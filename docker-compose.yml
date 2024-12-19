@@ -1,49 +1,40 @@
-version: "3.9"
-
 services:
-  frontend:
-    build:
-      context: ./finance-wise  
-    container_name: frontend
-    ports:
-      - "80:80"  
-    depends_on:
-      - backend  
-    networks:
-      - app-network
-
-  backend:
-    build:
-      context: ./finance-wise-api
-    container_name: backend
-    ports:
-      - "5000:5000"
+  database:
+    image: postgres:latest
+    container_name: postgres-container  
     environment:
-      - DATABASE_HOST=db
-      - DATABASE_PORT=5432
-      - DATABASE_USER=postgres
-      - DATABASE_PASSWORD=mysecretpassword
-      - DATABASE_NAME=mydb
+      POSTGRES_DB: mydatabase
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - mynetwork
+      
+  backend:
+    build: 
+      context: ./finance-wise-api
+      dockerfile: Dockerfile
+    container_name: backend
+    environment:
+      - DB_HOST=database
+      - DB_PORT=5432
+      - DB_NAME=mydatabase
+      - DB_USERNAME=myuser
+      - DB_PASSWORD=mypassword
+      - JWT_SECRET=myjwtsecret
+    ports:
+      - "3000:3000"
     depends_on:
       - database
     networks:
-      - app-network
-
-  database:
-    image: postgres:13 
-    container_name: database
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: mysecretpassword
-      POSTGRES_DB: mydb
-    volumes:
-      - db_data:/var/lib/postgresql/data
-    networks:
-      - app-network
+      - mynetwork
 
 volumes:
-  db_data:
+  postgres_data:
 
 networks:
-  app-network:
+  mynetwork:
     driver: bridge
