@@ -13,9 +13,9 @@ import { MailModule } from 'src/mail/mail.module';
 
 @Module({
   imports: [
+    MailModule,
     UserModule,
     PassportModule,
-    MailModule,
     JwtModule.register({
       secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: '30d' },

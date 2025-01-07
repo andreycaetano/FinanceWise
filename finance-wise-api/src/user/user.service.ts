@@ -10,16 +10,16 @@ import { JwtService } from '@nestjs/jwt';
 export class UserService {
   constructor(
     @InjectRepository(User)
-    private readonly repository: Repository<User>,
+    private readonly userRepository: Repository<User>,
     private readonly jwtService: JwtService,
   ) {}
 
   async findByEmail(email: string): Promise<User> {
-    return this.repository.findOne({ where: { email } });
+    return this.userRepository.findOne({ where: { email } });
   }
 
   async getOne(id: string): Promise<User> {
-    const user = await this.repository.findOne({ where: { id } });
+    const user = await this.userRepository.findOne({ where: { id } });
     if (!user) {
       throw new Error('User not found');
     }
@@ -29,12 +29,8 @@ export class UserService {
   async update(id: string, updatedUserDto: UpdateUserDto): Promise<User> {
     await this.getOne(id);
 
-    await this.repository.update(id, updatedUserDto);
+    await this.userRepository.update(id, updatedUserDto);
 
     return instanceToPlain(await this.getOne(id)) as User;
-  }
-
-  private generateResetToken(userId: string): string {
-    return this.jwtService.sign({ userId }, { expiresIn: '15m' });
   }
 }
