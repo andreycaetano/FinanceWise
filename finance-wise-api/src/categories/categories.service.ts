@@ -43,13 +43,16 @@ export class CategoriesService {
       ...createCategoryDto,
       user,
     });
-    return newCategory;
+    return instanceToPlain(
+      await this.categoryRepository.save(newCategory),
+    ) as Category;
   }
 
   async findAll(user: User): Promise<Category[]> {
-    return instanceToPlain(
-      await this.categoryRepository.find({ where: { user } }),
-    ) as Category[];
+    return await this.categoryRepository.find({
+      where: { user: user },
+      relations: ['user'],
+    });
   }
 
   async findOne(id: string): Promise<Category> {

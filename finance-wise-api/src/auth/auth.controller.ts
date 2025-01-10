@@ -19,7 +19,7 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @IsPublic()
-  @Post()
+  @Post('register')
   @HttpCode(HttpStatus.CREATED)
   create(@Body() createAuthDto: CreateUserDto) {
     return this.authService.create(createAuthDto);
@@ -27,7 +27,7 @@ export class AuthController {
 
   @IsPublic()
   @UseGuards(LocalAuthGuard)
-  @Post()
+  @Post('login')
   @HttpCode(HttpStatus.OK)
   login(@Request() req: AuthRequest) {
     return this.authService.login(req.user);

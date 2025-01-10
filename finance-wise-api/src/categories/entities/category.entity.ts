@@ -1,4 +1,5 @@
 import { Exclude } from 'class-transformer';
+import { Transaction } from 'src/transactions/entities/transaction.entity';
 import { User } from 'src/user/entities/user.entity';
 import {
   Column,
@@ -6,6 +7,7 @@ import {
   DeleteDateColumn,
   Entity,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -31,6 +33,14 @@ export class Category {
   @DeleteDateColumn()
   deletedAt: Date | null;
 
-  @ManyToOne(() => User, (user) => user.category, { onDelete: 'CASCADE' })
+  @ManyToOne(() => User, (user) => user.category, {
+    onDelete: 'CASCADE',
+    cascade: true,
+  })
   user: User;
+
+  @OneToMany(() => Transaction, (transaction) => transaction.category, {
+    onDelete: 'CASCADE',
+  })
+  transactions: Transaction[];
 }
